@@ -1,6 +1,7 @@
 package com.erpconnect.controller;
 
 import com.erpconnect.model.*;
+import com.erpconnect.repository.AccountRepository;
 import com.erpconnect.repository.CustomerRepository;
 import com.erpconnect.rsa.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,10 @@ import java.io.IOException;
 import java.security.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/customer/v1")
@@ -23,6 +27,9 @@ public class RestControllerClass {
 
     @Autowired
     CustomerRepository customerRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -143,10 +150,56 @@ public class RestControllerClass {
 
         //Customer add their public key themselves
         customerEntity.setCustomer_public_key(customerRequestModel.getCustomer_public_key());
+        customerEntity.setVerified(0);
 
         customerRepository.save(customerEntity);
 
         return "New Customer Added Successfully!";
+    }
+
+    @PostMapping("/customer-verify")
+    public String CustomerVerify(@RequestBody CustomerVerifyRequestModel customerVerifyRequestModel){
+
+        Optional<CustomerEntity> customer = customerRepository.findById(customerVerifyRequestModel.getCustomer_id());
+        CustomerEntity customerEntity = customer.get();
+
+        customerEntity.setVerified(1);
+
+        customerRepository.save(customerEntity);
+        return "Customer with ID: " + customerVerifyRequestModel.getCustomer_id() + " has been verified!";
+    }
+
+    @PostMapping("/add-account")
+    public String AddAccount(@RequestBody AddAccountRequestModel addAccountRequestModel){
+        AccountEntity accountEntity = new AccountEntity();
+
+        accountEntity.setAccount_id(addAccountRequestModel.getAccount_id());
+        accountEntity.setCustomer_id(addAccountRequestModel.getCustomer_id());
+        accountEntity.setBank_id(addAccountRequestModel.getBank_id());
+
+        accountRepository.save(accountEntity);
+
+        return "Account: " + addAccountRequestModel.getAccount_id() + " for Customer: " + addAccountRequestModel.getCustomer_id() + " has been added successfully.";
+    }
+
+    @PostMapping("/remove-account")
+    public String RemoveAccount(@RequestBody AddAccountRequestModel addAccountRequestModel){
+
+        Optional<AccountEntity> account = accountRepository.findById(addAccountRequestModel.getAccount_id());
+
+        AccountEntity accountEntity = account.get();
+
+        accountRepository.delete(accountEntity);
+
+        return "Account: " + addAccountRequestModel.getAccount_id() + " for Customer: " + addAccountRequestModel.getCustomer_id() + " has been deleted successfully.";
+    }
+
+    @PostMapping("/account-by-customer")
+    public List<AccountEntity> AccountByCustomer(@RequestBody CustomerEntity customerEntity){
+
+        List<AccountEntity> accountEntityList = accountRepository.findAllAccountByCustomerId(customerEntity.getCustomer_id());
+
+        return accountEntityList;
     }
 
 }

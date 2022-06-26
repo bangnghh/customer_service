@@ -9,7 +9,7 @@ public class CustomerEntity {
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "customer_id")
-    private int customer_id;
+    private String customer_id;
     @Basic
     @Column(name = "password")
     private String password;
@@ -31,12 +31,15 @@ public class CustomerEntity {
     @Basic
     @Column(name = "customer_public_key")
     private String customer_public_key;
+    @Basic
+    @Column(name = "verified")
+    private int verified;
 
-    public int getCustomer_id() {
+    public String getCustomer_id() {
         return customer_id;
     }
 
-    public void setCustomer_id(int customer_id) {
+    public void setCustomer_id(String customer_id) {
         this.customer_id = customer_id;
     }
 
@@ -94,6 +97,14 @@ public class CustomerEntity {
 
     public void setCustomer_public_key(String customer_public_key) {
         this.customer_public_key = customer_public_key;
+    }
+
+    public int getVerified() {
+        return verified;
+    }
+
+    public void setVerified(int verified) {
+        this.verified = verified;
     }
 
     @Override

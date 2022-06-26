@@ -1,7 +1,7 @@
 package com.erpconnect.model;
 
 public class CustomerRequestModel {
-    private int customer_id;
+    private String customer_id;
     private String password;
     private String customer_name;
     private String customer_address;
@@ -11,11 +11,11 @@ public class CustomerRequestModel {
     public CustomerRequestModel() {
     }
 
-    public int getCustomer_id() {
+    public String getCustomer_id() {
         return customer_id;
     }
 
-    public void setCustomer_id(int customer_id) {
+    public void setCustomer_id(String customer_id) {
         this.customer_id = customer_id;
     }
 

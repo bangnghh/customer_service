@@ -4,6 +4,8 @@ import com.erpconnect.model.*;
 import com.erpconnect.repository.AccountRepository;
 import com.erpconnect.repository.CustomerRepository;
 import com.erpconnect.rsa.RsaUtils;
+import net.bytebuddy.utility.RandomString;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -120,9 +122,8 @@ public class RestControllerClass {
         return cypherText.toString();
     }
 
-
-    @PostMapping("/customer-register")
-    public String CustomerRegister (@RequestBody CustomerRequestModel customerRequestModel) throws Exception {
+    @PostMapping("/customer-onboard")
+    public String CustomerOnBoard (@RequestBody CustomerRequestModel customerRequestModel) throws Exception {
 
         //Generate KeyPair for each Customer
         KeyPair keyPair = RsaUtils.generateKeyPair();
@@ -137,8 +138,13 @@ public class RestControllerClass {
 
         customerEntity.setCustomer_id(customerRequestModel.getCustomer_id());
 
-        //Password must be Encrypted
-        customerEntity.setPassword(bCryptPasswordEncoder.encode(customerRequestModel.getPassword()));
+        //Generate first random password
+        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder()
+                .selectFrom("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray())
+                .build();
+        String randomPw = pwdGenerator.generate(15);
+        customerEntity.setPassword(bCryptPasswordEncoder.encode(randomPw));
+        customerEntity.setFirst_password(randomPw);
 
         customerEntity.setCustomer_name(customerRequestModel.getCustomer_name());
         customerEntity.setCustomer_phone(customerRequestModel.getCustomer_phone());
@@ -149,12 +155,43 @@ public class RestControllerClass {
         customerEntity.setErpconnect_private_key(str_private_key);
 
         //Customer add their public key themselves
+        customerEntity.setCustomer_public_key("");
+        customerEntity.setVerified(0);
+
+        customerEntity.setContact_email(customerRequestModel.getContact_email());
+        customerEntity.setContact_phone(customerRequestModel.getContact_phone());
+        customerEntity.setDocument_path(customerRequestModel.getDocument_path());
+
+        customerRepository.save(customerEntity);
+
+        return "New customer-onboard record has been created successfully.";
+    }
+
+
+    @PostMapping("/customer-register")
+    public String CustomerRegister (@RequestBody CustomerRequestModel customerRequestModel) throws Exception {
+
+        Optional<CustomerEntity> customer = customerRepository.findById(customerRequestModel.getCustomer_id());
+        CustomerEntity customerEntity = customer.get();
+
+        customerEntity.setCustomer_id(customerRequestModel.getCustomer_id());
+
+        //Password must be Encrypted
+        customerEntity.setPassword(bCryptPasswordEncoder.encode(customerRequestModel.getPassword()));
+        customerEntity.setFirst_password("Used");
+
+        customerEntity.setCustomer_name(customerRequestModel.getCustomer_name());
+        customerEntity.setCustomer_phone(customerRequestModel.getCustomer_phone());
+        customerEntity.setCustomer_address(customerRequestModel.getCustomer_address());
+
+
+        //Customer add their public key themselves
         customerEntity.setCustomer_public_key(customerRequestModel.getCustomer_public_key());
         customerEntity.setVerified(0);
 
         customerRepository.save(customerEntity);
 
-        return "New Customer Added Successfully!";
+        return "Customer registration was successful.";
     }
 
     @PostMapping("/customer-verify")

@@ -3,10 +3,14 @@ package com.erpconnect.model;
 public class CustomerRequestModel {
     private String customer_id;
     private String password;
+    private String first_password;
     private String customer_name;
     private String customer_address;
     private String customer_phone;
     private String customer_public_key;
+    private String contact_email;
+    private String contact_phone;
+    private String document_path;
 
     public CustomerRequestModel() {
     }
@@ -57,5 +61,37 @@ public class CustomerRequestModel {
 
     public void setCustomer_public_key(String customer_public_key) {
         this.customer_public_key = customer_public_key;
+    }
+
+    public String getContact_email() {
+        return contact_email;
+    }
+
+    public void setContact_email(String contact_email) {
+        this.contact_email = contact_email;
+    }
+
+    public String getContact_phone() {
+        return contact_phone;
+    }
+
+    public void setContact_phone(String contact_phone) {
+        this.contact_phone = contact_phone;
+    }
+
+    public String getDocument_path() {
+        return document_path;
+    }
+
+    public void setDocument_path(String document_path) {
+        this.document_path = document_path;
+    }
+
+    public String getFirst_password() {
+        return first_password;
+    }
+
+    public void setFirst_password(String first_password) {
+        this.first_password = first_password;
     }
 }

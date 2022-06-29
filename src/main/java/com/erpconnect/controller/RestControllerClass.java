@@ -216,7 +216,7 @@ public class RestControllerClass {
 
         accountRepository.save(accountEntity);
 
-        return "Account: " + addAccountRequestModel.getAccount_id() + " for Customer: " + addAccountRequestModel.getCustomer_id() + " has been added successfully.";
+        return "Account: " + addAccountRequestModel.getAccount_id() + " related to Customer: " + addAccountRequestModel.getCustomer_id() + " has been added successfully.";
     }
 
     @PostMapping("/remove-account")
@@ -228,7 +228,7 @@ public class RestControllerClass {
 
         accountRepository.delete(accountEntity);
 
-        return "Account: " + addAccountRequestModel.getAccount_id() + " for Customer: " + addAccountRequestModel.getCustomer_id() + " has been deleted successfully.";
+        return "Account: " + addAccountRequestModel.getAccount_id() + " related to Customer: " + addAccountRequestModel.getCustomer_id() + " has been deleted.";
     }
 
     @PostMapping("/account-by-customer")
